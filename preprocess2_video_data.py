@@ -9,6 +9,7 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 from vis import multi_slice_viewer
+from scipy.ndimage import correlate
 
 # Specify whether to use a OneDrive path or the local data/ folder
 onedrive_data = False
@@ -35,6 +36,23 @@ def visualize(images, masks, titles):
         ax[k+num_img].imshow(normalize_img(np.squeeze(masks[k,:,:])))
         ax[k+num_img].axis('off')
         ax[k+num_img].set_title(titles[k]+' fluo. image')
+    plt.show()
+
+def bf_fluo_correlate(embryo_idx, bf_image, fluo_image, normalized=False, smoothed=False, dim=3):
+    """Plot correlation between bf/fluo images, pixel-by-pixel or smoothed in tiles."""
+    if normalized:
+        bf_image = normalize_img(bf_image)
+        fluo_image = normalize_img(fluo_image)
+    if smoothed:
+        weights = [[1/(dim**2)]*dim]*dim
+        bf_image = correlate(bf_image, weights)
+        fluo_image = correlate(fluo_image, weights)
+    plt.scatter(bf_image.flatten(), fluo_image.flatten())
+    norm_str = ('N' if normalized else 'Unn') + 'ormalized'
+    smooth_str = ('' if smoothed else 'un') + 'smoothed'
+    plt.xlabel(f"{norm_str} bf frame val")
+    plt.ylabel(f"{norm_str} fluo frame val")
+    plt.title(f"Correlation plot for {smooth_str} embryo {embryo_idx}")
     plt.show()
 
 #%%
@@ -84,3 +102,5 @@ multi_slice_viewer(sequence)
 
 #%%
 # correlation
+bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1])
+bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1], smoothed=True)
