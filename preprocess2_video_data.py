@@ -10,6 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from vis import multi_slice_viewer
 
+# Specify whether to use a OneDrive path or the local data/ folder
+onedrive_data = False
+
 def normalize_img(a):
     # normalize each channel of 2D/3D image to [0,1]
     temp = a - np.min(a)
@@ -28,16 +31,20 @@ def visualize(images, masks, titles):
         ax[k].imshow(normalize_img(np.squeeze(images[k,:,:,])))
         ax[k].axis('off')
         ax[k].set_title(titles[k]+' bf image')
-        
+
         ax[k+num_img].imshow(normalize_img(np.squeeze(masks[k,:,:])))
         ax[k+num_img].axis('off')
         ax[k+num_img].set_title(titles[k]+' fluo. image')
     plt.show()
-    
+
 #%%
 # read a set of embryo data
-bf_data_path = 'D:/New_OneDrive/OneDrive - California Institute of Technology/7. AI Embryo/4. Data/video_bf_data'
-fluo_data_path = 'D:/New_OneDrive/OneDrive - California Institute of Technology/7. AI Embryo/4. Data/video_fluo_data'
+if onedrive_data:
+    bf_data_path = 'D:/New_OneDrive/OneDrive - California Institute of Technology/7. AI Embryo/4. Data/video_bf_data'
+    fluo_data_path = 'D:/New_OneDrive/OneDrive - California Institute of Technology/7. AI Embryo/4. Data/video_fluo_data'
+else:
+    bf_data_path = 'data/video_bf_data'
+    fluo_data_path = 'data/video_fluo_data'
 
 embryo_idx = 1
 bf = h5py.File(os.path.join(bf_data_path,'embryo_'+str(embryo_idx)+'.mat'))
@@ -77,6 +84,3 @@ multi_slice_viewer(sequence)
 
 #%%
 # correlation
-
-
-

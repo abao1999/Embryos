@@ -19,7 +19,7 @@ def remove_keymap_conflicts(new_keys_set):
             remove_list = set(keys) & new_keys_set
             for key in remove_list:
                 keys.remove(key)
-           
+
 def multi_slice_viewer(volume):
     remove_keymap_conflicts({'j', 'k'})
     fig, ax = plt.subplots()
@@ -27,6 +27,7 @@ def multi_slice_viewer(volume):
     ax.index = volume.shape[0] // 2
     ax.imshow(volume[ax.index])
     fig.canvas.mpl_connect('key_press_event', process_key)
+    plt.show()
 
 def process_key(event):
     fig = event.canvas.figure
