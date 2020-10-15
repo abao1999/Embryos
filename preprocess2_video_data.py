@@ -104,6 +104,8 @@ multi_slice_viewer(np.squeeze(fluo_video[:,:,:,0]))
 sequence = np.squeeze(fluo_video[7,:,:,:])
 sequence = np.swapaxes(sequence,0,2)
 multi_slice_viewer(sequence)
+# Uncomment to save images from sequence
+# save_all_images(sequence, 'embryo_{}_fluo_sequence'.format(embryo_idx), 'fluo_sequence')
 
 #%%
 # correlation
