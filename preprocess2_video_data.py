@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 from vis import multi_slice_viewer
-from scipy.ndimage import correlate
+from scipy.ndimage import correlate, maximum_filter, minimum_filter
 
 # Specify whether to use a OneDrive path or the local data/ folder
 onedrive_data = False
@@ -43,22 +43,33 @@ def save_all_images(images, name, dir_name):
         fn = '{}/{}_{}.png'.format(dir_name, t, name)
         plt.imsave(fn, normalize_img(np.squeeze(images[t,:,:])))
 
-def bf_fluo_correlate(embryo_idx, bf_image, fluo_image, normalized=False, smoothed=False, dim=3):
+def bf_fluo_correlate(embryo_idx, bf_image, fluo_image, normalized=False, smoothed=None, dim=3):
     """Plot correlation between bf/fluo images, pixel-by-pixel or smoothed in tiles."""
+    norm_str = ('N' if normalized else 'Unn') + 'ormalized'
+    smooth_str = 'unsmoothed'
     if normalized:
         bf_image = normalize_img(bf_image)
         fluo_image = normalize_img(fluo_image)
     if smoothed:
-        weights = [[1/(dim**2)]*dim]*dim
-        bf_image = correlate(bf_image, weights)
-        fluo_image = correlate(fluo_image, weights)
+        if smoothed == 'avg':
+            weights = [[1/(dim**2)]*dim]*dim
+            bf_image = correlate(bf_image, weights)
+            fluo_image = correlate(fluo_image, weights)
+        elif smoothed == 'max':
+            bf_image = maximum_filter(bf_image, size=dim)
+            fluo_image = maximum_filter(fluo_image, size=dim)
+        elif smoothed == 'min':
+            bf_image = minimum_filter(bf_image, size=dim)
+            fluo_image = minimum_filter(fluo_image, size=dim)
+        else:
+            raise Exception('smoothed can only be avg, max, or min')
+        smooth_str = 'smoothed by ' + smoothed
     plt.scatter(bf_image.flatten(), fluo_image.flatten())
-    norm_str = ('N' if normalized else 'Unn') + 'ormalized'
-    smooth_str = ('' if smoothed else 'un') + 'smoothed'
     plt.xlabel(f"{norm_str} bf frame val")
     plt.ylabel(f"{norm_str} fluo frame val")
     plt.title(f"Correlation plot for {smooth_str} embryo {embryo_idx}")
     plt.show()
+
 
 #%%
 # read a set of embryo data
@@ -110,4 +121,6 @@ multi_slice_viewer(sequence)
 #%%
 # correlation
 bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1])
-bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1], smoothed=True)
+bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1], smoothed='avg')
+bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1], smoothed='min')
+bf_fluo_correlate(embryo_idx, bf_images[1], fluo_images[1], smoothed='max')
