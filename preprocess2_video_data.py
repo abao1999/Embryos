@@ -38,6 +38,11 @@ def visualize(images, masks, titles):
         ax[k+num_img].set_title(titles[k]+' fluo. image')
     plt.show()
 
+def save_all_images(images, name, dir_name):
+    for t in range(total_time):
+        fn = '{}/{}_{}.png'.format(dir_name, t, name)
+        plt.imsave(fn, normalize_img(np.squeeze(images[t,:,:])))
+
 def bf_fluo_correlate(embryo_idx, bf_image, fluo_image, normalized=False, smoothed=False, dim=3):
     """Plot correlation between bf/fluo images, pixel-by-pixel or smoothed in tiles."""
     if normalized:
