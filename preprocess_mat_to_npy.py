@@ -66,7 +66,6 @@ if __name__ == '__main__':
                 os.mkdir(full_path)
 
     # Process each idx with each method in funcs
-    # Note: polarization data is currently not used
     for idx in embryo_idx_arr:
         bf_video, bf_pol_state = load_bf_video(idx)
         process_and_save(idx, bf_video, bf_processed_path)
