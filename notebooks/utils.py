@@ -4,6 +4,11 @@ def get_z_slice(z, img):
     assert len(img.shape) == 4
     return img[z, :, :, :]
 
+def get_middle_z(img):
+    assert len(img.shape) == 4
+    return get_z_slice(int(img.shape[0] / 2), img)
+
+
 def get_img_at_t(t, img):
     assert len(img.shape) == 4
     return img[:, :, :, t]
