@@ -7,3 +7,4 @@ Here is an updated list of notebooks:
 4. classify_fluo_CNN.ipynb - combo of classify_fluo.ipynb / classify_fluo_pretrained.ipynb, using original cs101 drive
 5. classify_fluo_CNN_2.ipynb - similar to classify_fluo_CNN.ipynb, using new shared drive
 6. explore.ipynb - adaptation of original starter notebook provided by Cheng
+7. classify_fluo_CNN_single_output.ipynb - uses 1 output dim instead of 10
