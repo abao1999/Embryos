@@ -4,11 +4,6 @@ def get_z_slice(z, img):
     assert len(img.shape) == 4
     return img[z, :, :, :]
 
-def get_middle_z(img):
-    assert len(img.shape) == 4
-    return get_z_slice(int(img.shape[0] / 2), img)
-
-
 def get_img_at_t(t, img):
     assert len(img.shape) == 4
     return img[:, :, :, t]
@@ -25,6 +20,13 @@ def normalize(img):
     else:
         b = temp
     return b
+
+def middle_z(img):
+    assert len(img.shape) == 4
+
+    result = np.empty(shape=(1, xdim, ydim, tdim))
+    result[0] = get_z_slice(int(img.shape[0] / 2), img)
+    return result
 
 def max_across_z(img, normalize=False):
     """ Returns a new image where each pixel
