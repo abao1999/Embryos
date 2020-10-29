@@ -24,6 +24,7 @@ def normalize(img):
 def middle_z(img):
     assert len(img.shape) == 4
 
+    zdim, xdim, ydim, tdim = img.shape
     result = np.empty(shape=(1, xdim, ydim, tdim))
     result[0] = get_z_slice(int(img.shape[0] / 2), img)
     return result
@@ -31,7 +32,7 @@ def middle_z(img):
 def max_across_z(img, normalize=False):
     """ Returns a new image where each pixel
     intensity is the maximum for that pixel across
-    all images in the z-stack. 
+    all images in the z-stack.
     """
 
     if normalize:
@@ -46,7 +47,7 @@ def max_across_z(img, normalize=False):
 def min_across_z(img, normalize=False):
     """ Returns a new image where each pixel
     intensity is the minimum for that pixel across
-    all images in the z-stack. 
+    all images in the z-stack.
     """
 
     if normalize:
@@ -60,8 +61,8 @@ def min_across_z(img, normalize=False):
 
 def avg_across_z(img, normalize=False):
     """ Returns a new image where each pixel
-    intensity is the average for that pixel across 
-    all images in the z-stack. 
+    intensity is the average for that pixel across
+    all images in the z-stack.
     """
 
     if normalize:
@@ -72,8 +73,3 @@ def avg_across_z(img, normalize=False):
 
     result[0] = np.mean(img, axis=0)
     return result
-
-
-
-
-
