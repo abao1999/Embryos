@@ -148,7 +148,7 @@ def get_max_pixel(embryos, data_path):
         max_per_embryo.append(np.max(embryo))
     return max(max_per_embryo)
 
-def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embryo'):
+def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embryo', dim=2):
     ''' Save dataset in image format, sorted by polarization state
     embryos: subset of p_embryo... train, val, test
     specs = (data_path, pol_path, video_time_info)
@@ -158,6 +158,7 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
                       video_time_info (df: info per embryo)
     window: number of t steps from first polarized index to ignore
     normalize: type of normalization to apply (per_embryo, per_timestep, #)
+    dim: 2 or 3 (using 2d representation of z-stack or 3d selection of slices)
     '''
     data_path, pol_path, video_time_info = specs
     for i in range(len(embryos)):
@@ -178,14 +179,28 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
             embryo = embryo.astype(np.float64) / normalize
         embryo = 255 * embryo # Now scale by 255
         embryo = embryo.astype(np.uint8)
-        if len(embryo.shape) == 4:
-            embryo = embryo[0]
+        
+        # Scale from (1,x,y,t) -> (x,y,t) if using 2D image input
+        if dim == 2:
+            if len(embryo.shape) == 4:
+                embryo = embryo[0]
+            
         print(embryo_idx, np.shape(embryo)[2])
         for t in range(np.shape(embryo)[2]):
             if within_window(embryo_idx, t, window, video_time_info):
                 print(f'skipping embryo {embryo_idx} step {t}')
                 continue
             pol = embryo_pol[t]
-            img = Image.fromarray(embryo[:,:,t], 'L')
-            img_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.png'
-            img.save(img_path)
+            
+            # Save as images if using 2D image as tstep input
+            if dim == 2:
+                img = Image.fromarray(embryo[:,:,t], 'L')
+                img_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.png'
+                img.save(img_path)
+            
+            # Save as npy if using 3D slices as tstep input
+            if dim == 3:
+                mid = int(embryo.shape[0] / 2)
+                slices = embryo[mid-1:mid+2,:,:,t]
+                slices_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.npy'
+                np.save(slices_path, slices)

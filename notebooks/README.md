@@ -10,5 +10,6 @@ Here is an updated list of notebooks:
 7. *classify_fluo_CNN_single_output.ipynb - uses 1 output dim instead of 10
 8. *classify_fluo_CNN_torch.ipynb - PyTorch reimplementation of previous CNN
 9. classify_fluo_CNN_torch_drive.ipynb - same as 8 but with new shared drive
+10. classify_fluo_CNN_3D_torch_drive.ipynb - using 3D instead of 2D
 
 Notebooks with * were moved to ../outdated/
