@@ -160,6 +160,7 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
     normalize: type of normalization to apply (per_embryo, per_timestep, #)
     dim: 2 or 3 (using 2d representation of z-stack or 3d selection of slices)
     '''
+    print("howdy")
     data_path, pol_path, video_time_info = specs
     for i in range(len(embryos)):
         embryo_idx = embryos[i]
@@ -168,6 +169,7 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
         try:
             embryo = np.load(embryo_path)
         except FileNotFoundError:
+            print("File not found", embryo_path)
             continue
         embryo_pol = np.squeeze(np.load(embryo_pol_path)).astype(int)
         # normalize the data to 0 - 1 by
@@ -201,6 +203,10 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
             # Save as npy if using 3D slices as tstep input
             if dim == 3:
                 mid = int(embryo.shape[0] / 2)
+                print("mid:", mid)
                 slices = embryo[mid-1:mid+2,:,:,t]
+                print("slices", slices)
                 slices_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.npy'
+                print(slices_path)
                 np.save(slices_path, slices)
+
