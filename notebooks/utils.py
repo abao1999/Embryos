@@ -181,12 +181,12 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
         embryo = embryo.astype(np.uint8)
         
         # Scale from (1,x,y,t) -> (x,y,t) if using 2D image input
-        # if dim == 2:
-        if len(embryo.shape) == 4:
-            embryo = embryo[0]
+        if dim == 2:
+            if len(embryo.shape) == 4:
+                embryo = embryo[0]
             
-        print(embryo_idx, np.shape(embryo)[2])
-        for t in range(np.shape(embryo)[2]):
+        print(embryo_idx, np.shape(embryo)[-1])
+        for t in range(np.shape(embryo)[-1]):
             if within_window(embryo_idx, t, window, video_time_info):
                 print(f'skipping embryo {embryo_idx} step {t}')
                 continue
