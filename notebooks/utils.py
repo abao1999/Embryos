@@ -81,13 +81,13 @@ def avg_across_z(img, normalize=False):
 
 # The following functions are used to prepare training/testing sets on drive
 
-def prepare_drive():
-    """ Runs system command to ensure shared drive
-    mounts properly.
-    """
-    # Reference: https://github.com/googlecolab/colabtools/issues/1494
-    cmd = "!sed -i -e 's/enforce_single_parent:true/enforce_single_parent:true,metadata_cache_reset_counter:4/' /usr/local/lib/python3.6/dist-packages/google/colab/drive.py"
-    os.system(cmd)
+# def prepare_drive():
+#     """ Runs system command to ensure shared drive
+#     mounts properly.
+#     """
+#     # Reference: https://github.com/googlecolab/colabtools/issues/1494
+#     cmd = "!sed -i -e 's/enforce_single_parent:true/enforce_single_parent:true,metadata_cache_reset_counter:4/' /usr/local/lib/python3.6/dist-packages/google/colab/drive.py"
+#     os.system(cmd)
 
 def split_train_test_val(home_path, embryo_inds):
     """ Splits a set of embryos into train/test/val:
@@ -160,7 +160,6 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
     normalize: type of normalization to apply (per_embryo, per_timestep, #)
     dim: 2 or 3 (using 2d representation of z-stack or 3d selection of slices)
     '''
-    print("howdy")
     data_path, pol_path, video_time_info = specs
     for i in range(len(embryos)):
         embryo_idx = embryos[i]
@@ -172,41 +171,50 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
             print("File not found", embryo_path)
             continue
         embryo_pol = np.squeeze(np.load(embryo_pol_path)).astype(int)
-        # normalize the data to 0 - 1 by
+
+        # pre-normalization steps
+        # embryo is currently np.float32, but for 3D input
+        # this conversion step exceeds Colab RAM usage
+        if dim == 2:
+            embryo = embryo.astype(np.float64)
+
+        # normalize the data to 0 - 1
         if normalize == 'per_embryo': # max val over the full embryo
-            embryo = embryo.astype(np.float64) / np.max(embryo)
+            embryo /= np.max(embryo)
         elif normalize == 'per_timestep': # max val over each timestep
-            embryo = embryo.astype(np.float64) / np.max(embryo, axis=(0,1))
+            embryo /= np.max(embryo, axis=(0,1))
         elif type(normalize) is not str: # a fixed numerical factor
-            embryo = embryo.astype(np.float64) / normalize
+            embryo /= normalize
         embryo = 255 * embryo # Now scale by 255
         embryo = embryo.astype(np.uint8)
-        
+
         # Scale from (1,x,y,t) -> (x,y,t) if using 2D image input
         if dim == 2:
             if len(embryo.shape) == 4:
                 embryo = embryo[0]
-            
+
         print(embryo_idx, np.shape(embryo)[-1])
         for t in range(np.shape(embryo)[-1]):
             if within_window(embryo_idx, t, window, video_time_info):
                 print(f'skipping embryo {embryo_idx} step {t}')
                 continue
             pol = embryo_pol[t]
-            
+
             # Save as images if using 2D image as tstep input
             if dim == 2:
                 img = Image.fromarray(embryo[:,:,t], 'L')
                 img_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.png'
                 img.save(img_path)
-            
+
             # Save as npy if using 3D slices as tstep input
             if dim == 3:
                 mid = int(embryo.shape[0] / 2)
-                print("mid:", mid)
                 slices = embryo[mid-1:mid+2,:,:,t]
-                print("slices", slices)
                 slices_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.npy'
-                print(slices_path)
                 np.save(slices_path, slices)
 
+                # memory optimization
+                slices = None
+
+        # memory optimization
+        embryo = None
