@@ -148,7 +148,7 @@ def get_max_pixel(embryos, data_path):
         max_per_embryo.append(np.max(embryo))
     return max(max_per_embryo)
 
-def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embryo', dim=2):
+def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embryo', dim=2, pol_subdir=True):
     ''' Save dataset in image format, sorted by polarization state
     embryos: subset of p_embryo... train, val, test
     specs = (data_path, pol_path, video_time_info)
@@ -159,6 +159,7 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
     window: number of t steps from first polarized index to ignore
     normalize: type of normalization to apply (per_embryo, per_timestep, #)
     dim: 2 or 3 (using 2d representation of z-stack or 3d selection of slices)
+    pol_subdir: whether to save images to "{save_path}/{pol}/" or "{save_path}/"
     '''
     data_path, pol_path, video_time_info = specs
     for i in range(len(embryos)):
@@ -200,17 +201,20 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
                 continue
             pol = embryo_pol[t]
 
+            # Set the specific sub-path of save_path to save the img
+            save_dir = f'{save_path}/{pol}' if pol_subdir else save_path
+
             # Save as images if using 2D image as tstep input
             if dim == 2:
                 img = Image.fromarray(embryo[:,:,t], 'L')
-                img_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.png'
+                img_path = f'{save_dir}/embryo_{embryo_idx}_{t}.png'
                 img.save(img_path)
 
             # Save as npy if using 3D slices as tstep input
             if dim == 3:
                 mid = int(embryo.shape[0] / 2)
                 slices = embryo[mid-1:mid+2,:,:,t]
-                slices_path = f'{save_path}/{pol}/embryo_{embryo_idx}_{t}.npy'
+                slices_path = f'{save_dir}/embryo_{embryo_idx}_{t}.npy'
                 np.save(slices_path, slices)
 
                 # memory optimization
