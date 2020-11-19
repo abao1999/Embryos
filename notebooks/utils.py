@@ -215,17 +215,20 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
             # Set the specific sub-path of save_path to save the img
             save_dir = f'{save_path}/{pol}' if pol_subdir else save_path
 
+            # Add a suffix for the pix2pix model (polarization label)
+            pol_suffix = f'_{pol}' if not pol_subdir else ''
+
             # Save as images if using 2D image as tstep input
             if dim == 2:
                 img = Image.fromarray(embryo[:,:,t], 'L')
-                img_path = f'{save_dir}/embryo_{embryo_idx}_{t}.png'
+                img_path = f'{save_dir}/embryo_{embryo_idx}_{t}{pol_suffix}.png'
                 img.save(img_path)
 
             # Save as npy if using 3D slices as tstep input
             if dim == 3:
                 mid = int(embryo.shape[0] / 2)
                 slices = embryo[mid-1:mid+2,:,:,t]
-                slices_path = f'{save_dir}/embryo_{embryo_idx}_{t}.npy'
+                slices_path = f'{save_dir}/embryo_{embryo_idx}_{t}{pol_suffix}.npy'
                 np.save(slices_path, slices)
 
                 # memory optimization
