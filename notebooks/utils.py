@@ -3,6 +3,10 @@ import os
 import pandas as pd
 from PIL import Image
 
+# The following constants are different idx to train on:
+PARTIAL_IDX = [1, 3, 12, 13, 16, 18, 19, 24, 39, 40, 42, 45, 46, 47, 49, 50, 52]
+FULL_IDX = PARTIAL_IDX + [76, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 92, 93, 94, 95, 96, 97, 99, 100, 101, 102]
+
 # The following functions are used in preprocessing raw data:
 
 def get_z_slice(z, img):
