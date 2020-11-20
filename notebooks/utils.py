@@ -236,3 +236,96 @@ def save_nps_as_png(embryos, save_path, specs, window=None, normalize='per_embry
 
         # memory optimization
         embryo = None
+
+def save_nps_subset_z(embryos, save_path, specs, window=None, normalize='per_embryo', mode='middle', n_slices=3, pol_subdir=True):
+    ''' Save dataset in image format, sorted by polarization state
+    embryos: subset of p_embryo... train, val, test
+    specs = (data_path, pol_path, video_time_info)
+    save_path: path to save png to... data_path + {'train', 'val', 'test'}
+    specs: tuple with data_path (str: processed np embryo data),
+                      pol_path (str: embryo polarization labels),
+                      video_time_info (df: info per embryo)
+    window: number of t steps from first polarized index to ignore
+    normalize: type of normalization to apply (per_embryo, per_timestep, #)
+    mode: min, middle, max... where to start z slices (if middle, get z slices around middle)
+    n_slices: number of z slices to get
+    pol_subdir: whether to save images to "{save_path}/{pol}/" or "{save_path}/"
+    '''
+    if mode not in ['min', 'middle', 'max'] or n_slices < 1:
+        print("Please enter something valid")
+        return
+    data_path, pol_path, video_time_info = specs
+    for i in range(len(embryos)):
+        embryo_idx = embryos[i]
+        embryo_path = f'{data_path}/embryo{embryo_idx}.npy'
+        embryo_pol_path = f'{pol_path}/embryo{embryo_idx}.npy'
+        try:
+            embryo = np.load(embryo_path)
+        except FileNotFoundError:
+            print("File not found", embryo_path)
+            continue
+        embryo_pol = np.squeeze(np.load(embryo_pol_path)).astype(int)
+
+        # pre-normalization steps
+        # embryo is currently np.float32, but for 3D input
+        # this conversion step exceeds Colab RAM usage
+        embryo = embryo.astype(np.float64)
+
+        # normalize the data to 0 - 1
+        if normalize == 'per_embryo': # max val over the full embryo
+            embryo /= np.max(embryo)
+        elif normalize == 'per_timestep': # max val over each timestep
+            embryo /= np.max(embryo, axis=(0,1))
+        elif type(normalize) is not str: # a fixed numerical factor
+            embryo /= normalize
+        embryo = 255 * embryo # Now scale by 255
+        embryo = embryo.astype(np.uint8)
+
+        print(embryo_idx, np.shape(embryo)[-1])
+        for t in range(np.shape(embryo)[-1]):
+            if within_window(embryo_idx, t, window, video_time_info):
+                print(f'skipping embryo {embryo_idx} step {t}')
+                continue
+            pol = embryo_pol[t]
+
+            # Set the specific sub-path of save_path to save the img
+            save_dir = f'{save_path}/{pol}' if pol_subdir else save_path
+
+            # Add a suffix for the pix2pix model (polarization label)
+            pol_suffix = f'_{pol}' if not pol_subdir else ''
+            
+            # save as npy
+            if mode == 'middle':
+                mid = embryo.shape[0]//2
+                try:
+                    slices = embryo[mid-(n_slices//2):mid+(n_slices - n_slices//2),:,:,t]
+                except IndexError:
+                    print("z slices went out of bounds")
+                    continue
+                    
+            elif mode == 'min':
+                try:
+                    slices = embryo[0:n_slices,:,:,t]
+                except IndexError:
+                    print("z slices went out of bounds")
+                    continue
+                    
+            elif mode == 'max':
+                try:
+                    slices = embryo[-1:-1-n_slices:-1,:,:,t]
+                except IndexError:
+                    print("z slices went out of bounds")
+                    continue
+                    
+            else:
+                print("something unexpected happened")
+            
+            slices_path = f'{save_dir}/embryo_{embryo_idx}_z{mode}{n_slices}_t{t}_pol{pol_suffix}.npy'
+            np.save(slices_path, slices)
+
+            # memory optimization
+            slices = None
+
+        # memory optimization
+        embryo = None
+
