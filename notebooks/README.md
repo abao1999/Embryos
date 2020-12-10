@@ -4,7 +4,7 @@ Here is an updated list of notebooks for reproducible results:
 1. TODO
 
 Here is a list of notebooks that are not intended for reproducible runs:
-1. mnist_cnn.ipynb - online tutorial for MNIST classification with CNN
+1. *mnist_cnn.ipynb - online tutorial for MNIST classification with CNN
 2. *classify_fluo.ipynb - adaptation of mnist_cnn.ipynb, using local data
 3. classify_fluo_pretrained.ipynb - transfer learning on pretrained model, using original cs101 drive
 4. *classify_fluo_CNN.ipynb - combo of classify_fluo.ipynb / classify_fluo_pretrained.ipynb, using original cs101 drive
@@ -17,3 +17,7 @@ Here is a list of notebooks that are not intended for reproducible runs:
 11. visualize_model_features.ipynb - for visualizations (path still set to original cs101 drive)
 
 Notebooks with * were moved to outdated/
+
+Models folder contains architectures of some models used:
+1. 2dcnn1.py: Simple CNN
+2. convgru.py: Convolutional GRU, replacing the pointwise matrix operations within the GRU cell's gates with convolutional operations
