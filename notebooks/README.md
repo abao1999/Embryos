@@ -21,3 +21,7 @@ Notebooks with * were moved to outdated/
 Models folder contains architectures of some models used:
 1. 2dcnn1.py: Simple CNN
 2. convgru.py: Convolutional GRU, replacing the pointwise matrix operations within the GRU cell's gates with convolutional operations
+
+## Utils
+
+The file utils.py contains many helpful functions that our pipelines and models rely on. These functions include normalization functions, functions to select embryo slices, aggregation functions, train-test split helpers, and functions to convert and save the data as various file formats.
