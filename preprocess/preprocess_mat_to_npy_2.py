@@ -1,8 +1,11 @@
 import os
 import h5py
 import numpy as np
-from notebooks import utils
 import argparse
+
+import sys
+sys.path.append('..')
+from notebooks import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-idx', '--embryo-indices', type=str, default='1',
@@ -12,17 +15,17 @@ args = parser.parse_args()
 # _logger.info(args)
 
 # Source directory of the raw *.mat files.
-bf_data_path = 'data/video_bf_data'
-fluo_data_path = 'data/video_fluo_data'
+bf_data_path = '../data/video_bf_data'
+fluo_data_path = '../data/video_fluo_data'
 
 # Output directory of the processed *.npy files
-processed_path = 'processed'
+processed_path = '../processed'
 bf_processed_path = f'{processed_path}/bf_data'
 fluo_processed_path = f'{processed_path}/fluo_data'
 polar_processed_path = f'{processed_path}/polarization'
 
 # Pairs of processing functions the corrresponding sub directory names
-funcs = [('middle', utils.get_middle_z), ('max', utils.max_across_z),
+funcs = [('middle', utils.middle_z), ('max', utils.max_across_z),
          ('min', utils.min_across_z), ('avg', utils.avg_across_z)]
 
 # Indices to process

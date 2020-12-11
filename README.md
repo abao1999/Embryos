@@ -11,4 +11,4 @@ The `notebooks/` directory stores Jupyter notebooks which generated our core res
 
 The `preprocess/` directory stores various scripts to convert the original dataset (as ".mat" data or Google Drive images) into NumPy arrays for individual embryos. It also contains code for initial visualization/exploration of the embryo samples.
 
-Running the `preprocess/` scripts locally (i.e., not on Colab or HPC) requires the creation of `data/` and `processed/` directories (which are excluded from the repository via the `.gitignore` file). In general, we recommend running the provided models on Colab due to potentially long runtimes and/or high memory requirements.
+Running the `preprocess/` scripts locally (i.e., not on Colab or HPC) requires a top-level `data/` directory and will create a top-level `processed/` directory (which are excluded from the repository via the `.gitignore` file). In general, we recommend running the provided models on Colab due to potentially long runtimes and/or high memory requirements.
