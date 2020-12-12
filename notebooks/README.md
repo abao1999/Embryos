@@ -1,9 +1,9 @@
 # Notebooks
 
 Here is an updated list of notebooks for reproducible results:
-1. pretrained/classify_pretrained.ipynb - Implementation of ImageNet-pretrained classifier with GluonCV
-2. pretrained/visualize_model_features.ipynb - Analyze GluonCV classifier (confusion matrix, class activation maps, mistakes)
-3. pix2pix/pix2pix_TensorFlow.ipynb - 
+1. Train ImageNet-pretrained classifier and visualize model features to analyze results.
+  - pretrained/classify_pretrained.ipynb - Implementation of ImageNet-pretrained classifier with GluonCV
+  - pretrained/visualize_model_features.ipynb - Analyze GluonCV classifier (confusion matrix, class activation maps, mistakes)
 
 Here is a list of notebooks that are not intended for reproducible runs:
 1. *mnist_cnn.ipynb - online tutorial for MNIST classification with CNN
