@@ -1,0 +1,1 @@
+We are prototyping an anomaly detection approach to detecting polarization in the embryo channels. This is potentially an unsupervised/semi-supervised approach, in which we can analyze the latent space clustering of salient features to seach for meaningful patterns. 
